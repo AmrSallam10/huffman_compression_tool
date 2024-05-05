@@ -8,7 +8,6 @@ struct Node {
     char data;
     int freq;
     Node *left, *right;
-
     Node(char data, int freq, Node* left = nullptr, Node* right = nullptr)
         : data(data), freq(freq), left(left), right(right) {}
 };

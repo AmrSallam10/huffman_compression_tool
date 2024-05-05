@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "zipper.h"
-#include "utils.cpp"
+#include "utils.h"
 
 enum Command {
     COMPRESS = 1,
@@ -34,7 +34,7 @@ Command getValidCommand() {
     int command;
     while (true) {
         system("clear");
-        std::cout << "Choose action:\n1. Compress \n2. Decompress \n3. Exit \n";
+        std::cout << "Choose action:\n1. Compress \n2. Decompress \n3. Exit \nChoice:";
         std::cin >> command;
         if (command == Command::COMPRESS || command == Command::DECOMPRESS || command == Command::EXIT) {
             break;
@@ -48,7 +48,6 @@ Command getValidCommand() {
 
 int main() {
     HuffmanCompression hc;
-    int command;
     std::string inputFilename;
     std::string outputFilename;
 
