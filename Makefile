@@ -22,5 +22,5 @@ run: all
 clean:
 	rm -f $(OUT) $(RSLT)
 
-test:
+test: run
 	sha256sum file.txt *_decompressed.txt 
