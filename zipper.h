@@ -1,8 +1,8 @@
 #pragma once
-#include <unordered_map>
-#include <vector>
 #include <map>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 struct Node {
     char data;
@@ -13,23 +13,25 @@ struct Node {
 };
 
 struct comp {
-    bool operator()(Node* l, Node* r) {
-        return l->freq > r->freq;
-    }
+    bool operator()(Node* l, Node* r) { return l->freq > r->freq; }
 };
 
 class HuffmanCompression {
-public:
+   public:
     void compress(const std::string& inputFilename, const std::string& outputFilename);
     void decompress(const std::string& inputFilename, const std::string& outputFilename);
 
-private:
+   private:
     std::map<char, int> buildFrequencyTable(const std::string& text);
     Node* buildHuffmanTree(const std::map<char, int>& freqTable);
     std::unordered_map<char, std::string> generateHuffmanCodes(Node* root);
-    void generateHuffmanCodesRec(Node* root, std::string str, std::unordered_map<char, std::string>& huffmanCode);
-    std::vector<uint8_t> encode(const std::string& text, const std::unordered_map<char, std::string>& huffmanCodes);
-    std::string decode(const std::string& encodedData, const std::unordered_map<char, std::string>& huffmanCodest);
-    void writeToFile(const std::string& filename, const std::vector<uint8_t>& encodedData, const std::map<char, int>& freqTable);
+    void generateHuffmanCodesRec(Node* root, std::string str,
+                                 std::unordered_map<char, std::string>& huffmanCode);
+    std::vector<uint8_t> encode(const std::string& text,
+                                const std::unordered_map<char, std::string>& huffmanCodes);
+    std::string decode(const std::string& encodedData,
+                       const std::unordered_map<char, std::string>& huffmanCodest);
+    void writeToFile(const std::string& filename, const std::vector<uint8_t>& encodedData,
+                     const std::map<char, int>& freqTable);
     std::pair<std::string, std::map<char, int>> readFromFile(const std::string& filename);
 };

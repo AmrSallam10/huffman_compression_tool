@@ -1,8 +1,8 @@
-#include <fstream>
-#include <vector>
-#include <iostream>
-
 #include "utils.h"
+
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 std::ifstream openFileForReading(const std::string& filename) {
     std::ifstream inFile(filename);
@@ -60,8 +60,8 @@ std::string getFilename(const std::string& path) {
 std::string extractOriginalFilename(const std::string& filename) {
     std::string originalFilename;
     size_t pos = filename.find_last_of(".");
-    originalFilename = pos? filename.substr(0, pos) : filename;
+    originalFilename = pos ? filename.substr(0, pos) : filename;
     pos = filename.find_last_of("_");
-    originalFilename = pos? originalFilename.substr(0, pos) : originalFilename;
+    originalFilename = pos ? originalFilename.substr(0, pos) : originalFilename;
     return originalFilename;
 }
