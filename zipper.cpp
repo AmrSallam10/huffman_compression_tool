@@ -1,12 +1,12 @@
-#include "zipper.h"
-
-#include <fstream>
 #include <iostream>
-#include <queue>
+#include <fstream>
 #include <sstream>
+#include <queue>
 #include <stdexcept>
 
+#include "ds/Node.h"
 #include "utils.h"
+#include "zipper.h"
 
 std::map<char, int> HuffmanCompression::buildFrequencyTable(const std::string &text) {
     std::map<char, int> freq;
@@ -17,7 +17,7 @@ std::map<char, int> HuffmanCompression::buildFrequencyTable(const std::string &t
 }
 
 Node *HuffmanCompression::buildHuffmanTree(const std::map<char, int> &freqTable) {
-    std::priority_queue<Node *, std::vector<Node *>, comp> pq;
+    std::priority_queue<Node *, std::vector<Node *>, nodeComp> pq;
     for (auto pair : freqTable) {
         pq.push(new Node(pair.first, pair.second));
     }
@@ -26,7 +26,7 @@ Node *HuffmanCompression::buildHuffmanTree(const std::map<char, int> &freqTable)
         pq.pop();
         Node *right = pq.top();
         pq.pop();
-        int sum = left->freq + right->freq;
+        int sum = left->getFreq() + right->getFreq();
         pq.push(new Node('\0', sum, left, right));
     }
     return pq.top();
@@ -42,11 +42,11 @@ void HuffmanCompression::generateHuffmanCodesRec(
     Node *root, std::string str, std::unordered_map<char, std::string> &huffmanCodes) {
     if (root == nullptr) return;
     // leaf node
-    if (!root->left && !root->right) {
-        huffmanCodes[root->data] = str;
+    if (!root->getLeft() && !root->getRight()) {
+        huffmanCodes[root->getData()] = str;
     }
-    generateHuffmanCodesRec(root->left, str + "0", huffmanCodes);
-    generateHuffmanCodesRec(root->right, str + "1", huffmanCodes);
+    generateHuffmanCodesRec(root->getLeft(), str + "0", huffmanCodes);
+    generateHuffmanCodesRec(root->getRight(), str + "1", huffmanCodes);
 }
 
 std::vector<uint8_t> HuffmanCompression::encode(

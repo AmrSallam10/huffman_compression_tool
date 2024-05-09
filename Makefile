@@ -22,5 +22,10 @@ run: all
 clean:
 	rm -f $(OUT) $(RSLT)
 
-test: run
-	sha256sum file.txt *_decompressed.txt 
+test: 
+	@for file in *_decompressed.txt; do \
+		base=$$(basename $$file _decompressed.txt).txt; \
+		HASH1=$$(sha256sum $$base| awk '{print $$1}'); \
+		HASH2=$$(sha256sum $$file | awk '{print $$1}'); \
+		if [ "$$HASH1" = "$$HASH2" ]; then echo "[$$base] Test passed"; else echo "[$$base] Test failed"; fi; \
+	done

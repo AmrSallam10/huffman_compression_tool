@@ -1,8 +1,8 @@
-#include "utils.h"
-
-#include <fstream>
 #include <iostream>
+#include <fstream>
 #include <vector>
+
+#include "utils.h"
 
 std::ifstream openFileForReading(const std::string& filename) {
     std::ifstream inFile(filename);

@@ -1,8 +1,8 @@
-#include <chrono>
-#include <fstream>
 #include <iostream>
-#include <string>
+#include <fstream>
+#include <chrono>
 #include <thread>
+#include <string>
 
 #include "utils.h"
 #include "zipper.h"

@@ -4,17 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-struct Node {
-    char data;
-    int freq;
-    Node *left, *right;
-    Node(char data, int freq, Node* left = nullptr, Node* right = nullptr)
-        : data(data), freq(freq), left(left), right(right) {}
-};
-
-struct comp {
-    bool operator()(Node* l, Node* r) { return l->freq > r->freq; }
-};
+#include "ds/Node.h"
 
 class HuffmanCompression {
    public:
