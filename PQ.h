@@ -1,17 +1,3 @@
-// File: PQ.h
-// Priority Queue header file (Minimum Heap)
-/* ______________________________________________________________________________
-The PQ is implemented as a minimum Heap.
-The elements of the heap are of type (E).
-The top of the heap will contain the smallest element.
-The heap condition is that a parent is always
-less than or equal to the children.
-The heap is implemented as a dynamic array a[] with a
-size specified by the class constructor.
-Location a[0] is reserved for a value "itemMin" smaller
-than any possible value (e.g. a negative number)
-_________________________________________________________________________________
-*/
 #include <functional>
 
 template <class E>

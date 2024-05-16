@@ -1,6 +1,5 @@
-#pragma once
 class Node {
-   public:
+public:
     Node(char data, int freq, Node* left = nullptr, Node* right = nullptr)
         : data(data), freq(freq), left(left), right(right) {}
 
@@ -12,10 +11,10 @@ class Node {
     void setLeft(Node* left) { this->left = left; }
     void setRight(Node* right) { this->right = right; }
 
-   private:
+private:
     char data;
     int freq;
-    Node *left, *right;
+    Node* left, * right;
 };
 
 struct nodeComp {
