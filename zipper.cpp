@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #include "ds/PQ.cpp"
 #include "utils.h"
@@ -14,18 +15,26 @@ struct compareee {
     bool operator()(Node* l, Node* r) { return l->freq > r->freq; }
 };
 
-std::map<char, int> HuffmanCompression::buildFrequencyTable(const std::string& text) {
-    std::map<char, int> freq;
+binaryTree<char, int> HuffmanCompression::buildFrequencyTable(const std::string& text) {
+    binaryTree<char, int> freq;
     for (char ch : text) {
-        freq[ch]++;
+        int data;
+
+        if (freq.retrieve(ch, data)) {
+            freq.update(ch, data + 1);
+        } else {
+            freq.insert(ch, 1);
+        }
     }
     return freq;
 }
 
-Node* HuffmanCompression::buildHuffmanTree(const std::map<char, int>& freqTable) {
+Node* HuffmanCompression::buildHuffmanTree(binaryTree<char, int>& freqTable) {
     PQ<Node*> pq(100000, comp, new Node(NULL, -1));
+    std::vector<std::pair<char, int>> pairs;
+    freqTable.traverse(pairs);
     // std::priority_queue<Node*, std::vector<Node*>, comp> pq;s
-    for (auto pair : freqTable) {
+    for (auto pair : pairs) {
         pq.insert(new Node(pair.first, pair.second));
     }
 
@@ -38,28 +47,34 @@ Node* HuffmanCompression::buildHuffmanTree(const std::map<char, int>& freqTable)
     return pq.remove();
 }
 
-std::unordered_map<char, std::string> HuffmanCompression::generateHuffmanCodes(Node* root) {
-    std::unordered_map<char, std::string> huffmanCodes;
+binaryTree<char, std::string> HuffmanCompression::generateHuffmanCodes(Node* root) {
+    binaryTree<char, std::string> huffmanCodes;
     generateHuffmanCodesRec(root, "", huffmanCodes);
     return huffmanCodes;
 }
 
-void HuffmanCompression::generateHuffmanCodesRec(
-    Node* root, std::string str, std::unordered_map<char, std::string>& huffmanCodes) {
+void HuffmanCompression::generateHuffmanCodesRec(Node* root, std::string str,
+                                                 binaryTree<char, std::string>& huffmanCodes) {
     if (root == nullptr) return;
     // leaf node
     if (!root->left && !root->right) {
-        huffmanCodes[root->data] = str;
+        std::string data;
+        if (huffmanCodes.retrieve(root->data, data)) {
+            huffmanCodes.update(root->data, str);
+        }
+        huffmanCodes.insert(root->data, str);
     }
     generateHuffmanCodesRec(root->left, str + "0", huffmanCodes);
     generateHuffmanCodesRec(root->right, str + "1", huffmanCodes);
 }
 
-std::vector<uint8_t> HuffmanCompression::encode(
-    const std::string& text, const std::unordered_map<char, std::string>& huffmanCodes) {
+std::vector<uint8_t> HuffmanCompression::encode(const std::string& text,
+                                                binaryTree<char, std::string>& huffmanCodes) {
     std::string str = "";
     for (char ch : text) {
-        str += huffmanCodes.at(ch);
+        std::string data;
+        huffmanCodes.retrieve(ch, data);
+        str += data;
     }
     std::vector<uint8_t> encodedData;
     str_to_byte(str, encodedData);
@@ -67,12 +82,14 @@ std::vector<uint8_t> HuffmanCompression::encode(
 }
 
 std::string HuffmanCompression::decode(const std::string& encodedData,
-                                       const std::unordered_map<char, std::string>& huffmanCodes) {
+                                       binaryTree<char, std::string>& huffmanCodes) {
     std::string decodedText = "";
     std::string code = "";
     for (char ch : encodedData) {
         code += ch;
-        for (auto pair : huffmanCodes) {
+        std::vector<std::pair<char, std::string>> pairs;
+        huffmanCodes.traverse(pairs);
+        for (auto pair : pairs) {
             if (pair.second == code) {
                 decodedText += pair.first;
                 code = "";
@@ -85,10 +102,13 @@ std::string HuffmanCompression::decode(const std::string& encodedData,
 
 void HuffmanCompression::writeToFile(const std::string& filename,
                                      const std::vector<uint8_t>& encodedData,
-                                     const std::map<char, int>& freqTable) {
+                                     binaryTree<char, int>& freqTable) {
     try {
         auto outFile = openFileForWriting(filename);
-        for (const auto& pair : freqTable) {
+        std::vector<std::pair<char, int>> pairs;
+        freqTable.traverse(pairs);
+
+        for (const auto& pair : pairs) {
             std::string ch;
             if (pair.first == ' ') {
                 ch = "_";
@@ -111,11 +131,11 @@ void HuffmanCompression::writeToFile(const std::string& filename,
     }
 }
 
-std::pair<std::string, std::map<char, int>> HuffmanCompression::readFromFile(
+std::pair<std::string, binaryTree<char, int>> HuffmanCompression::readFromFile(
     const std::string& filename) {
     try {
         auto inFile = openFileForReading(filename);
-        std::map<char, int> freqTable;
+        binaryTree<char, int> freqTable;
         std::string ch;
         int freq;
         std::string line;
@@ -125,8 +145,14 @@ std::pair<std::string, std::map<char, int>> HuffmanCompression::readFromFile(
             ch = ch == "_" ? " " : ch;
             ch = ch == "\\n" ? "\n" : ch;
             ch = ch == "\\r" ? "\r" : ch;
-            freqTable[ch[0]] = freq;
+            int data;
+            if (freqTable.retrieve(ch[0], data)) {
+                freqTable.update(ch[0], freq);
+            } else {
+                freqTable.insert(ch[0], freq);
+            }
         }
+
         std::string encodedDataStr((std::istreambuf_iterator<char>(inFile)),
                                    std::istreambuf_iterator<char>());
         std::vector<uint8_t> encodedDataBytes(encodedDataStr.begin(), encodedDataStr.end());
@@ -145,9 +171,9 @@ void HuffmanCompression::compress(const std::string& inputFilename,
         auto inFile = openFileForReading(inputFilename);
         std::string text((std::istreambuf_iterator<char>(inFile)),
                          std::istreambuf_iterator<char>());
-        std::map<char, int> freqTable = buildFrequencyTable(text);
+        binaryTree<char, int> freqTable = buildFrequencyTable(text);
         Node* root = buildHuffmanTree(freqTable);
-        std::unordered_map<char, std::string> huffmanCodes = generateHuffmanCodes(root);
+        binaryTree<char, std::string> huffmanCodes = generateHuffmanCodes(root);
         std::vector<uint8_t> encodedData = encode(text, huffmanCodes);
         writeToFile(outputFilename, encodedData, freqTable);
         inFile.close();
@@ -159,11 +185,11 @@ void HuffmanCompression::compress(const std::string& inputFilename,
 void HuffmanCompression::decompress(const std::string& inputFilename,
                                     const std::string& outputFilename) {
     try {
-        std::pair<std::string, std::map<char, int>> fileoutput = readFromFile(inputFilename);
+        std::pair<std::string, binaryTree<char, int>> fileoutput = readFromFile(inputFilename);
         std::string encodedDataStr = fileoutput.first;
-        std::map<char, int> freqTable = fileoutput.second;
+        binaryTree<char, int> freqTable = fileoutput.second;
         Node* root = buildHuffmanTree(freqTable);
-        std::unordered_map<char, std::string> huffmanCodes = generateHuffmanCodes(root);
+        binaryTree<char, std::string> huffmanCodes = generateHuffmanCodes(root);
         std::string decodedData = decode(encodedDataStr, huffmanCodes);
         auto outFile = openFileForWriting(outputFilename);
         outFile << decodedData;

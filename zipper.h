@@ -1,6 +1,5 @@
-#include <map>
+#include "binaryTree.cpp"
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 struct Node {
@@ -17,16 +16,16 @@ class HuffmanCompression {
     void decompress(const std::string& inputFilename, const std::string& outputFilename);
 
    private:
-    std::map<char, int> buildFrequencyTable(const std::string& text);
-    Node* buildHuffmanTree(const std::map<char, int>& freqTable);
-    std::unordered_map<char, std::string> generateHuffmanCodes(Node* root);
+    binaryTree<char, int> buildFrequencyTable(const std::string& text);
+    Node* buildHuffmanTree(binaryTree<char, int>& freqTable);
+    binaryTree<char, std::string> generateHuffmanCodes(Node* root);
     void generateHuffmanCodesRec(Node* root, std::string str,
-                                 std::unordered_map<char, std::string>& huffmanCode);
+                                 binaryTree<char, std::string>& huffmanCode);
     std::vector<uint8_t> encode(const std::string& text,
-                                const std::unordered_map<char, std::string>& huffmanCodes);
+                                binaryTree<char, std::string>& huffmanCodes);
     std::string decode(const std::string& encodedData,
-                       const std::unordered_map<char, std::string>& huffmanCodest);
+                       binaryTree<char, std::string>& huffmanCodest);
     void writeToFile(const std::string& filename, const std::vector<uint8_t>& encodedData,
-                     const std::map<char, int>& freqTable);
-    std::pair<std::string, std::map<char, int>> readFromFile(const std::string& filename);
+                     binaryTree<char, int>& freqTable);
+    std::pair<std::string, binaryTree<char, int>> readFromFile(const std::string& filename);
 };
